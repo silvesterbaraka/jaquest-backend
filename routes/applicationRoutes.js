@@ -3,9 +3,15 @@ const router = express.Router();
 const multer = require("multer");
 const Application = require("../models/applicationModel");
 
+// Configure multer storage
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
+});
+
+// POST application
 router.post(
   "/apply",
   upload.fields([
@@ -15,6 +21,10 @@ router.post(
   ]),
   async (req, res) => {
     try {
+
+      console.log("Form Data:", req.body);
+      console.log("Files:", req.files);
+
       const newApplication = new Application({
         student_name: req.body.student_name,
         email: req.body.email,
@@ -30,15 +40,18 @@ router.post(
 
       await newApplication.save();
 
-      res.json({
+      res.status(200).json({
         success: true,
         message: "Application submitted successfully"
       });
 
     } catch (error) {
+
+      console.error(error);
+
       res.status(500).json({
         success: false,
-        message: "Server error"
+        message: "Server error while submitting application"
       });
     }
   }
