@@ -1,35 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const Appointment = require("../models/Appointment");
+
+const Appointment = require("../models/appointmentModel");
 
 router.post("/appointments", async (req, res) => {
+
   try {
 
-    const {
-      name,
-      email,
-      purpose,
-      countryCode,
-      phone,
-      date,
-      time,
-      message,
-      timezone
-    } = req.body;
+    const appointment = new Appointment(req.body);
 
-    const newAppointment = new Appointment({
-      name,
-      email,
-      purpose,
-      countryCode,
-      phone,
-      date,
-      time,
-      message,
-      timezone
-    });
-
-    await newAppointment.save();
+    await appointment.save();
 
     res.status(200).json({
       success: true,
@@ -38,7 +18,7 @@ router.post("/appointments", async (req, res) => {
 
   } catch (error) {
 
-    console.error("Error saving appointment:", error);
+    console.error(error);
 
     res.status(500).json({
       success: false,
@@ -46,6 +26,7 @@ router.post("/appointments", async (req, res) => {
     });
 
   }
+
 });
 
 module.exports = router;
